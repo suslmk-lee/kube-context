@@ -1,15 +1,31 @@
-name: Build and Release Executables
+name: Create Release and Upload Assets
 
 on:
   push:
-    branches:
-      - main
-      - master
-  workflow_dispatch: # Allows manual triggering
+    tags:
+      - 'v*' # Runs on tags like v1.0, v1.2.3
 
 jobs:
-  build:
-    name: Build on ${{ matrix.os }}
+  create_release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+  build_and_upload:
+    name: Build and Upload on ${{ matrix.os }}
+    needs: create_release
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -35,8 +51,26 @@ jobs:
           chmod +x build.sh
           ./build.sh
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
+      - name: Prepare Asset for Upload (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          zip -qr KubeContextManager-macOS.zip dist/KubeContextManager.app
+          echo "ASSET_PATH=KubeContextManager-macOS.zip" >> $GITHUB_ENV
+          echo "ASSET_NAME=KubeContextManager-macOS.zip" >> $GITHUB_ENV
+
+      - name: Prepare Asset for Upload (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          mv dist/KubeContextManager KubeContextManager-Linux
+          echo "ASSET_PATH=KubeContextManager-Linux" >> $GITHUB_ENV
+          echo "ASSET_NAME=KubeContextManager-Linux" >> $GITHUB_ENV
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: KubeContextManager-${{ matrix.os }}
-          path: dist/
+          upload_url: ${{ needs.create_release.outputs.upload_url }}
+          asset_path: ${{ env.ASSET_PATH }}
+          asset_name: ${{ env.ASSET_NAME }}
+          asset_content_type: application/octet-stream
