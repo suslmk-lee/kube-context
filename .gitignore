@@ -1,1 +1,6 @@
 __pycache__
+build
+dist
+KubeContextManager.spec
+warn-KubeContextManager.txt
+sample_kubeconfig.yaml
