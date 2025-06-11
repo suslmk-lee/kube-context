@@ -1,140 +1,109 @@
 # Kubernetes Context Manager
 
-A simple and elegant GUI application for managing Kubernetes contexts on Linux systems.
+A simple and elegant GUI application for managing Kubernetes contexts on Linux and macOS systems.
+
+[![Build and Release](https://github.com/suslmk-lee/kube-context/actions/workflows/build-release.yml/badge.svg)](https://github.com/suslmk-lee/kube-context/actions/workflows/build-release.yml)
 
 ## Features
 
-- 📋 **View all contexts**: Display all available Kubernetes contexts in a clean table format
-- ⭐ **Current context indicator**: Clearly shows which context is currently active
-- 🔄 **Switch contexts**: Double-click or use the button to switch between contexts
-- 📁 **Import contexts**: Add contexts from kubeconfig files via file dialog
-- 🗑️ **Delete contexts**: Remove contexts and their associated clusters/users
-- 🔄 **Auto-refresh**: Keep the context list up to date
-- 💾 **Automatic backup**: Creates backups before making any changes
-- 🎨 **Modern UI**: Clean and intuitive interface built with Tkinter
+- 📋 **View & Manage Contexts**: Display, switch, rename, and delete Kubernetes contexts in a clean table format.
+- ⭐ **Current Context Indicator**: Clearly shows the active context.
+- 🔄 **Seamless Context Switching**: Double-click or use the button to switch contexts instantly.
+- 📁 **Import Contexts**: Add contexts from any kubeconfig file via a file dialog.
+- ✨ **Naver Cloud (NKS) Integration**: Automatically add contexts for NKS clusters using `ncp-iam-authenticator`.
+- 💾 **Automatic Backup**: Creates a backup of your `~/.kube/config` file before making any changes.
+- 🎨 **Modern UI**: Clean and intuitive interface built with **PySide6** for a native look and feel on both Linux and macOS.
+- 📦 **Automated Builds**: New releases for Linux and macOS are automatically built and published via GitHub Actions.
 
 ## Screenshots
 
-The application features a modern, two-panel interface:
-- Left panel: Context list with current context highlighted
-- Right panel: Action buttons and current context information
-- Status bar: Shows current operations and config file path
+*(Screenshots of the new PySide6 interface can be added here)*
 
 ## Requirements
 
-- Python 3.6 or higher
-- Linux operating system
-- Tkinter (usually included with Python)
-- PyYAML library
+- Python 3.7 or higher
+- `ncp-iam-authenticator` (Optional, for NKS integration). See [official installation guide](https://guide.ncloud-docs.com/docs/k8s-iam-k8s-iam-auth).
 
 ## Installation
 
-### Quick Install
+### Recommended: Download from Releases
 
-1. Clone or download this repository
-2. Run the installation script:
+The easiest way to get started is to download the latest pre-built executable for your operating system from the [**GitHub Releases page**](https://github.com/suslmk-lee/kube-context/releases/latest).
+
+1.  Go to the [Releases page](https://github.com/suslmk-lee/kube-context/releases/latest).
+2.  Download the asset for your OS (`KubeContextManager-Linux` or `KubeContextManager-macOS.zip`).
+3.  **On Linux**: Make the file executable: `chmod +x KubeContextManager-Linux`.
+4.  **On macOS**: Unzip the file and run the `KubeContextManager.app`.
+
+### Command Line Download (Linux)
+
+You can also download and run the application directly from your terminal:
 
 ```bash
-chmod +x install.sh
-./install.sh
+# Replace vX.Y.Z with the latest version from the releases page
+VERSION="v0.1.0"
+
+# Download using wget
+wget -O KubeContextManager https://github.com/suslmk-lee/kube-context/releases/download/${VERSION}/KubeContextManager-Linux
+
+# Or download using curl
+# curl -L -o KubeContextManager https://github.com/suslmk-lee/kube-context/releases/download/${VERSION}/KubeContextManager-Linux
+
+# Make it executable
+chmod +x KubeContextManager
+
+# Run the application
+./KubeContextManager
 ```
 
-The installer will:
-- Install Python dependencies
-- Create a desktop entry (Linux)
-- Set up command line launcher
-- Make the application executable
+### Manual Installation (from source)
 
-### Manual Install
+1.  Clone the repository:
+    ```bash
+    git clone https://github.com/suslmk-lee/kube-context.git
+    cd kube-context
+    ```
 
-1. Install Python dependencies:
-```bash
-pip3 install --user -r requirements.txt
-```
+2.  Install Python dependencies:
+    ```bash
+    pip install -r requirements.txt
+    ```
 
-2. Make the script executable:
-```bash
-chmod +x run.py
-```
+3.  Run the application:
+    ```bash
+    python run.py
+    ```
 
 ## Usage
 
-### Running the Application
+- **Switch Context**: Double-click a context or select it and click "Switch".
+- **Rename Context**: Select a context and click "Rename".
+- **Import from File**: Click "Import" to select a `kubeconfig` file to merge.
+- **Add NKS Context**: Click "Add NKS" to open a dialog for adding a Naver Cloud Kubernetes Service context.
+- **Delete Context**: Select a context and click "Delete".
 
-After installation, you can run the application in several ways:
+## Development & Building
 
-1. **Desktop Entry** (Linux): Look for "Kubernetes Context Manager" in your applications menu
-2. **Command Line**: Run `kube-context-manager` from anywhere in terminal
-3. **Direct Execution**: Run `python3 run.py` from the application directory
+This project uses `PyInstaller` to create executables. The build process is automated with GitHub Actions.
 
-### Using the Interface
+To build the application locally:
 
-1. **View Contexts**: All available contexts are displayed in the main table
-2. **Current Context**: The active context is marked with a ★ symbol
-3. **Switch Context**: 
-   - Double-click on any context, or
-   - Select a context and click "Switch to Selected Context"
-4. **Import Context**: 
-   - Click "Import Context from File"
-   - Select a kubeconfig YAML file
-   - The contexts will be merged into your config
-5. **Delete Context**:
-   - Select a context and click "Delete Selected Context"
-   - Associated clusters and users will be removed if not used elsewhere
-6. **Refresh**: Click "Refresh" to reload the context list
+1.  Install build dependencies:
+    ```bash
+    pip install pyinstaller
+    ```
 
-### Safety Features
-
-- **Automatic Backup**: The application creates a backup at `~/.kube/config.backup` before any changes
-- **Validation**: Checks for valid kubeconfig structure before importing
-- **Confirmation**: Asks for confirmation before deleting contexts
-- **Error Handling**: Graceful error handling with user-friendly messages
-
-## File Structure
-
-```
-kube-context01/
-├── kube_config_manager.py    # Core kubeconfig management logic
-├── kube_context_gui.py       # GUI application
-├── run.py                    # Application launcher
-├── install.sh               # Installation script
-├── requirements.txt         # Python dependencies
-└── README.md               # This file
-```
-
-## Configuration
-
-The application works with your existing `~/.kube/config` file. No additional configuration is needed.
-
-## Troubleshooting
-
-### Common Issues
-
-1. **"Python 3 not found"**: Install Python 3 using your distribution's package manager
-2. **"pip3 not found"**: Install pip3: `sudo apt install python3-pip` (Ubuntu/Debian)
-3. **Permission denied**: Make sure the script is executable: `chmod +x run.py`
-4. **Import fails**: Ensure the kubeconfig file is valid YAML format
-
-### Debug Mode
-
-To run with debug information, set the environment variable:
-```bash
-export PYTHONPATH=$(pwd)
-python3 -u run.py
-```
+2.  Run the build script:
+    ```bash
+    chmod +x build.sh
+    ./build.sh
+    ```
+    The executable will be created in the `dist/` directory.
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit issues or pull requests.
+Contributions, issues, and feature requests are welcome! Please feel free to submit a pull request or open an issue.
 
 ## License
 
 This project is open source and available under the MIT License.
-
-## Security
-
-This application:
-- Only reads and writes to your kubeconfig file
-- Creates automatic backups before changes
-- Does not send any data over the network
-- Runs entirely locally on your machine
