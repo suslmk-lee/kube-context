@@ -11,4 +11,4 @@ from kube_context_pyside_gui import main
 if __name__ == "__main__":
     print("Starting the application...")
     main()
-    print("Application finished.")~
+    print("Application finished.")
